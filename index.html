@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Recommendation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --surface-2: #f3f0ec;
+      --text: #28251d;
+      --muted: #6f6c65;
+      --primary: #01696f;
+      --primary-hover: #0c4e54;
+      --border: #d8d3cc;
+      --error: #b42318;
+      --success: #1f7a1f;
+      --shadow: 0 12px 32px rgba(0,0,0,0.08);
+      --radius: 18px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #171614;
+      --surface: #1f1d1a;
+      --surface-2: #262320;
+      --text: #e6e1d8;
+      --muted: #a7a198;
+      --primary: #4f98a3;
+      --primary-hover: #69acb6;
+      --border: #3b3833;
+      --error: #ff7b72;
+      --success: #7ee787;
+      --shadow: 0 12px 32px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 720px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--primary);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 700;
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.15;
+    }
+
+    p.lead {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 16px;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    button.submit-btn {
+      border: none;
+      background: var(--primary);
+      color: white;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button.submit-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .panel {
+      margin-top: 22px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface-2);
+    }
+
+    .status {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .result {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .error {
+      color: var(--error);
+    }
+
+    .success {
+      color: var(--success);
+    }
+
+    @media (max-width: 640px) {
+      .app { padding: 20px; }
+      h1 { font-size: 26px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">W</div>
+        <div>Weather Recommendation</div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button">Сменить тему</button>
+    </div>
+
+    <h1>Персональная рекомендация по погоде</h1>
+    <p class="lead">
+      Введите имя, выберите режим рекомендации и получите ответ от системы.
+      Время запроса и имя пользователя будут сохранены в базе данных.
+    </p>
+
+    <form id="recommendationForm">
+      <div class="field">
+        <label for="user_name">Имя пользователя</label>
+        <input id="user_name" name="user_name" type="text" maxlength="100" placeholder="Например, Denis" required />
+      </div>
+
+      <div class="field">
+        <label for="mode">Тип рекомендации</label>
+        <select id="mode" name="mode">
+          <option value="manual">Ручная рекомендация</option>
+          <option value="ai">ИИ-рекомендация</option>
+        </select>
+      </div>
+
+      <button class="submit-btn" type="submit">Получить рекомендацию</button>
+    </form>
+
+    <section class="panel" aria-live="polite">
+      <p class="status" id="status">Ожидание запроса.</p>
+      <p class="result" id="result">Здесь появится ответ.</p>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('recommendationForm');
+    const result = document.getElementById('result');
+    const status = document.getElementById('status');
+    const themeToggle = document.getElementById('themeToggle');
+    const root = document.documentElement;
+
+    let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    root.setAttribute('data-theme', theme);
+
+    themeToggle.addEventListener('click', () => {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', theme);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const user_name = document.getElementById('user_name').value.trim();
+      const mode = document.getElementById('mode').value;
+      const use_ai = mode === 'ai';
+
+      if (!user_name) {
+        status.textContent = 'Ошибка проверки формы.';
+        result.textContent = 'Введите имя пользователя.';
+        result.className = 'result error';
+        return;
+      }
+
+      status.textContent = 'Отправка запроса...';
+      result.textContent = 'Подождите, система обрабатывает данные.';
+      result.className = 'result';
+
+      try {
+        const response = await fetch('/api/request-recommendation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_name, use_ai })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || 'Ошибка сервера');
+        }
+
+        status.textContent = `Запрос выполнен успешно. ID: ${data.request_id}`;
+        result.textContent = data.recommendation || 'Рекомендация получена.';
+        result.className = 'result success';
+      } catch (error) {
+        status.textContent = 'Ошибка выполнения запроса.';
+        result.textContent = error.message;
+        result.className = 'result error';
+      }
+    });
+  </script>
+</body>
+</html>
