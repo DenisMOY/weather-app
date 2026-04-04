@@ -264,23 +264,43 @@
         const response = await fetch('/api/request-recommendation', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
           },
           body: JSON.stringify({ user_name, use_ai })
         });
 
-        const data = await response.json();
+        const contentType = response.headers.get('content-type') || '';
+        const raw = await response.text();
 
-        if (!response.ok) {
-          throw new Error(data.detail || 'Ошибка сервера');
+        // Только если приходит JSON-ответ, парсим его
+        let data = null;
+        if (contentType.includes('application/json') && raw.trim() !== '') {
+          try {
+            data = JSON.parse(raw);
+          } catch (parseError) {
+            throw new Error(`Некорректный JSON от сервера: ${raw.slice(0, 100)}...`);
+          }
         }
 
-        status.textContent = `Запрос выполнен успешно. ID: ${data.request_id}`;
-        result.textContent = data.recommendation || 'Рекомендация получена.';
+        // Если сервер вернул 4xx/5xx
+        if (!response.ok) {
+          throw new Error(
+            data?.detail ||
+            data?.message ||
+            raw ||
+            `Ошибка сервера: ${response.status}`
+          );
+        }
+
+        // Если всё ОК — выводим результат
+        status.textContent = `Запрос выполнен успешно. ID: ${data?.request_id ?? '—'}`;
+        result.textContent = data?.recommendation || 'Рекомендация получена.';
         result.className = 'result success';
       } catch (error) {
+        console.error('request-recommendation error:', error);
         status.textContent = 'Ошибка выполнения запроса.';
-        result.textContent = error.message;
+        result.textContent = error.message || 'Неизвестная ошибка';
         result.className = 'result error';
       }
     });
