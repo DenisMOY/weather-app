@@ -1,0 +1,8 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "serve": "/api/$1",
+      "methods": ["GET", "POST"]
+    }
+  ]
