@@ -151,6 +151,10 @@
 
     button.submit-btn:hover {
       background: var(--primary-hover);
+      position: sticky;
+      bottom: 20px;
+      margin-top: 16px;
+      z-index: 10;
     }
 
     .panel {
@@ -159,6 +163,9 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       background: var(--surface-2);
+      min-height: 140px;
+      max-height: 220px;
+      overflow-y: auto;
     }
 
     .status {
@@ -171,6 +178,9 @@
       margin: 0;
       white-space: pre-wrap;
       line-height: 1.6;
+      min-height: 140px;
+      max-height: 220px;
+      overflow-y: auto;
     }
 
     .error {
@@ -185,7 +195,15 @@
       .app { padding: 20px; }
       h1 { font-size: 26px; }
       .topbar { align-items: flex-start; flex-direction: column; }
+      .panel { 
+      min-height: 120px;
+      padding: 16px;
     }
+      .result {
+      font-size: 15px;      /* чуть крупнее на мобиле */
+    }
+
+  }
   </style>
 </head>
 <body>
