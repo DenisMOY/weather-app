@@ -203,7 +203,7 @@
       padding: 16px;
     }
       .result {
-      font-size: 15px;      /* чуть крупнее на мобиле */
+      font-size: 15px;
     }
 
   }
@@ -216,35 +216,35 @@
         <div class="logo">W</div>
         <div>Weather Recommendation</div>
       </div>
-      <button class="theme-toggle" id="themeToggle" type="button">Сменить тему</button>
+      <button class="theme-toggle" id="themeToggle" type="button">Donkere modus</button>
     </div>
 
-    <h1>Персональная рекомендация по погоде</h1>
+    <h1>Persoonlijke weersaanbeveling</h1>
     <p class="lead">
-      Введите имя, выберите режим рекомендации и получите ответ от системы.
-      Время запроса и имя пользователя будут сохранены в базе данных.
+      Voer de naam in, selecteer de aanbevelingsmodus en ontvang een antwoord van het systeem.
+      De tijd van het verzoek en de gebruikersnaam worden opgeslagen in de database.
     </p>
 
     <form id="recommendationForm">
       <div class="field">
-        <label for="user_name">Имя пользователя</label>
-        <input id="user_name" name="user_name" type="text" maxlength="100" placeholder="Например, Denis" required />
+        <label for="user_name">Gebruikersnaam</label>
+        <input id="user_name" name="user_name" type="text" maxlength="100" placeholder="Bijvoorbeeld Hans" required />
       </div>
 
       <div class="field">
-        <label for="mode">Тип рекомендации</label>
+        <label for="mode">Aanbeveligingsmodus</label>
         <select id="mode" name="mode">
-          <option value="manual">Ручная рекомендация</option>
-          <option value="ai">ИИ-рекомендация</option>
+          <option value="manual">Manual</option>
+          <option value="ai">AI-aanbeveling</option>
         </select>
       </div>
 
-      <button class="submit-btn" type="submit">Получить рекомендацию</button>
+      <button class="submit-btn" type="submit">Aanbeveling krijgen</button>
     </form>
 
     <section class="panel" aria-live="polite">
-      <p class="status" id="status">Ожидание запроса.</p>
-      <p class="result" id="result">Здесь появится ответ.</p>
+      <p class="status" id="status">In afwachting van verzoek.</p>
+      <p class="result" id="result">Hier zal het antwoord verschijnen.</p>
     </section>
   </main>
 
@@ -271,14 +271,14 @@
       const use_ai = mode === 'ai';
 
       if (!user_name) {
-        status.textContent = 'Ошибка проверки формы.';
-        result.textContent = 'Введите имя пользователя.';
+        status.textContent = 'Fout bij het controleren van het formulier.';
+        result.textContent = 'Voer de gebruikersnaam in.';
         result.className = 'result error';
         return;
       }
 
-      status.textContent = 'Отправка запроса...';
-      result.textContent = 'Подождите, система обрабатывает данные.';
+      status.textContent = 'Verzenden van het verzoek...';
+      result.textContent = 'Wacht even, het systeem verwerkt de gegevens.';
       result.className = 'result';
 
       try {
@@ -294,34 +294,31 @@
         const contentType = response.headers.get('content-type') || '';
         const raw = await response.text();
 
-        // Только если приходит JSON-ответ, парсим его
         let data = null;
         if (contentType.includes('application/json') && raw.trim() !== '') {
           try {
             data = JSON.parse(raw);
           } catch (parseError) {
-            throw new Error(`Некорректный JSON от сервера: ${raw.slice(0, 100)}...`);
+            throw new Error(`Onjuiste JSON van de server: ${raw.slice(0, 100)}...`);
           }
         }
 
-        // Если сервер вернул 4xx/5xx
         if (!response.ok) {
           throw new Error(
             data?.detail ||
             data?.message ||
             raw ||
-            `Ошибка сервера: ${response.status}`
+            `fout van de server: ${response.status}`
           );
         }
 
-        // Если всё ОК — выводим результат
-        status.textContent = `Запрос выполнен успешно. ID: ${data?.request_id ?? '—'}`;
-        result.textContent = data?.recommendation || 'Рекомендация получена.';
+        status.textContent = `Verzoek succesvol uitgevoerd. ID: ${data?.request_id ?? '—'}`;
+        result.textContent = data?.recommendation || 'Aanbeveling gekregen.';
         result.className = 'result success';
       } catch (error) {
         console.error('request-recommendation error:', error);
-        status.textContent = 'Ошибка выполнения запроса.';
-        result.textContent = error.message || 'Неизвестная ошибка';
+        status.textContent = 'Fout uitvoering verzoek.';
+        result.textContent = error.message || 'Onbekende fout';
         result.className = 'result error';
       }
     });
